@@ -29,6 +29,8 @@ def download_model():
 
 download_model()
 
+os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
+
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 print("Model loaded and compiled successfully!")
