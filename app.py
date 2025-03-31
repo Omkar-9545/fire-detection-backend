@@ -9,7 +9,7 @@ import io
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,origins='https://detectfire.vercel.app/')
 
 MODEL_PATH = "fire_detection_model.h5"
 
