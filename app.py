@@ -9,7 +9,7 @@ import io
 import os
 
 app = Flask(__name__)
-CORS(app,origins='https://detectfire.vercel.app/')
+CORS(app,origins='https://detectfire.vercel.app')
 
 MODEL_PATH = "fire_detection_model.h5"
 
@@ -40,6 +40,10 @@ def preprocess_image(image):
     img = np.asarray(img) / 255.0
     img = np.expand_dims(img, axis=0) 
     return img
+
+@app.before_request
+def log_request_info():
+    print('Headers: %s', request.headers)
 
 @app.route('/predict', methods=['POST'])
 def predict():
