@@ -45,6 +45,10 @@ def preprocess_image(image):
 def log_request_info():
     print('Headers: %s', request.headers)
 
+@app.route('/',methods=['POST','GET'])
+def greet():
+    print("Your server is running successfully......")
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
