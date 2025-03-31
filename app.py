@@ -48,6 +48,8 @@ def log_request_info():
 @app.route('/',methods=['POST','GET'])
 def greet():
     print("Your server is running successfully......")
+    tp = {"status":"All well"}
+    return jsonify(tp)
 
 @app.route('/predict', methods=['POST'])
 def predict():
