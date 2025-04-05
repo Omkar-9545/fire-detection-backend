@@ -72,3 +72,4 @@ def predict():
 
 def handler(request):
     return app(request)
+
