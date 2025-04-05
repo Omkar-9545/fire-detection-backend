@@ -11,33 +11,21 @@ import os
 app = Flask(__name__)
 CORS(app,origins='*')
 
-MODEL_PATH = "fire_detection_model.h5"
-
-GDRIVE_FILE_ID = "1YRuxxmOZ7B_8QX81WgRanVKqeoPqn9mA" 
-
-def download_model():
-     if not os.path.exists(MODEL_PATH):
-        print("Downloading model from Google Drive...")
-
-        gdrive_url = f"https://drive.google.com/uc?id={GDRIVE_FILE_ID}"
-        try:
-            gdown.download(gdrive_url, MODEL_PATH, quiet=False)
-            print("Model downloaded successfully!")
-        except Exception as e:
-            print(f"Failed to download model: {e}")
-            exit(1)
-
-download_model()
+MODEL_PATH = "fire_detection_model.tflite"
 
 os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
 
-model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
 print("Model loaded and compiled successfully!")
 
 def preprocess_image(image):
     img = image.resize((224, 224)) 
-    img = np.asarray(img) / 255.0
+    img = (np.asarray(img) / 255.0).astype(np.float32)
     img = np.expand_dims(img, axis=0) 
     return img
 
@@ -60,7 +48,9 @@ def predict():
     image = Image.open(io.BytesIO(file.read()))
     img = preprocess_image(image)
 
-    prediction = model.predict(img)[0]
+    interpreter.set_tensor(input_details[0]['index'], img)
+    interpreter.invoke()
+    prediction = interpreter.get_tensor(output_details[0]['index'])[0]
 
     result = {
         "fire_probability": float(prediction[0]),
