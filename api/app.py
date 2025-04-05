@@ -9,7 +9,7 @@ import io
 import os
 
 app = Flask(__name__)
-CORS(app,origins='https://detectfire.vercel.app')
+CORS(app,origins='*')
 
 MODEL_PATH = "fire_detection_model.h5"
 
@@ -70,5 +70,5 @@ def predict():
 
     return jsonify(result)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0',debug=True, port=10000)
+def handler(request):
+    return app(request)
